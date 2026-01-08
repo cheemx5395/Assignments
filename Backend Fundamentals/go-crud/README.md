@@ -11,4 +11,4 @@ Postman collection link:
 
 Since this was just a basic assignment I have kept all application logic in `main.go` if this was a larger project then we can also use the expected MVC architecture.
 
-It'd be great if you'd accept this assignment in this much shorter time I couldn't do anymore!
+It'd be great if you'd accept this assignment in this much shorter time, I've tried best of my knowledge!
