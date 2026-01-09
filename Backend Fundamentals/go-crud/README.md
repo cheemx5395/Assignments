@@ -1,4 +1,4 @@
-The applications server expects that you have postgres running on `PORT:5432`. Enter postgres database connection URL in `.env` file as following
+The applications server expects that you have postgres running, Enter postgres database connection URL in `.env` file as following
 
 ```
 DB_URL= //your_database_url
