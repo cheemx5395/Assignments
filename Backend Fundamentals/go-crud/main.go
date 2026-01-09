@@ -70,6 +70,7 @@ func main() {
 		err := json.NewDecoder(r.Body).Decode(&req)
 		if err != nil {
 			log.Printf("Error in creating the user: %v", err)
+			w.WriteHeader(500)
 			return
 		}
 		if req.Email == "" || req.Name == "" {
@@ -153,8 +154,61 @@ func main() {
 		w.Write(body)
 	})
 
+	// Update user based on path parameter
+	mux.HandleFunc("PATCH /users/{email}", func(w http.ResponseWriter, r *http.Request) {
+		req := struct {
+			Name string `json:"name"`
+		}{}
+
+		res := struct {
+			Message string `json:"message"`
+		}{}
+
+		err := json.NewDecoder(r.Body).Decode(&req)
+		if err != nil {
+			log.Printf("Error in updating the user: %v", err)
+			w.WriteHeader(500)
+			return
+		}
+		if req.Name == "" {
+			res.Message = "Empty name is not allowed."
+			body, _ := json.Marshal(res)
+			w.WriteHeader(400)
+			w.Write(body)
+			return
+		}
+
+		email := r.PathValue("email")
+
+		if email == "" {
+			log.Printf("Email not specified in path parameter: %v", err)
+			res.Message = "Email not specified in path parameter."
+			body, _ := json.Marshal(res)
+			w.WriteHeader(400)
+			w.Write(body)
+			return
+		}
+
+		err = dbcfg.DB.UpdateUserNameByEmail(context.Background(), database.UpdateUserNameByEmailParams{
+			Name:  req.Name,
+			Email: email,
+		})
+		if err != nil {
+			log.Printf("Error updating user: %v", err)
+			res.Message = "Error updating user."
+			body, _ := json.Marshal(res)
+			w.WriteHeader(500)
+			w.Write(body)
+			return
+		}
+
+		res.Message = "User updated successfully."
+		body, _ := json.Marshal(res)
+		w.WriteHeader(200)
+		w.Write(body)
+	})
+
 	// Delete user based on path parameter
-	// Get user based on path parameter
 	mux.HandleFunc("DELETE /users/{email}", func(w http.ResponseWriter, r *http.Request) {
 		email := r.PathValue("email")
 

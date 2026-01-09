@@ -76,3 +76,19 @@ func (q *Queries) GetUsers(ctx context.Context) ([]User, error) {
 	}
 	return items, nil
 }
+
+const updateUserNameByEmail = `-- name: UpdateUserNameByEmail :exec
+UPDATE users 
+SET name = $1
+WHERE email = $2
+`
+
+type UpdateUserNameByEmailParams struct {
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+
+func (q *Queries) UpdateUserNameByEmail(ctx context.Context, arg UpdateUserNameByEmailParams) error {
+	_, err := q.db.ExecContext(ctx, updateUserNameByEmail, arg.Name, arg.Email)
+	return err
+}
